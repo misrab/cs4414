@@ -23,12 +23,19 @@ fn main() {
 
     println!("Listening on [{}] ...", addr);
 
+    let mut visitor_count = 0;
+
     for stream in listener.incoming() {
+        // visitor_count += 1;
+
         match stream {
             Err(_) => (),
             Ok(mut stream) => {
+
                 // Spawn a thread to handle the connection
                 thread::spawn(move|| {
+
+
                     match stream.peer_addr() {
                         Err(_) => (),
                         Ok(pn) => println!("Received connection from: [{}]", pn),
@@ -41,16 +48,15 @@ fn main() {
                         Ok(body) => println!("Recieved request body:\n{}", body),
                     }
 
-                    let response =
-                        "HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=UTF-8\r\n\r\n
-                         <doctype !html><html><head><title>Hello, Rust!</title>
+                    let response = format!("{} visitors: {}", "HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=UTF-8\r\n\r\n
+                        <doctype !html><html><head><title>Hello, Rust!</title>
                          <style>body { background-color: #111; color: #FFEEAA }
-                                h1 { font-size:2cm; text-align: center; color: black; text-shadow: 0 0 4mm red}
+                                h1 { font-size:2cm; text-align: center; color: black; text-shadow: 0 0 4mm blue}
                                 h2 { font-size:2cm; text-align: center; color: black; text-shadow: 0 0 4mm green}
                          </style></head>
                          <body>
-                         <h1>Greetings, Krusty!</h1>
-                         </body></html>\r\n";
+                         <h1>Greetings, Rust!</h1>
+                         </body></html>\r\n", visitor_count);
                     stream.write(response.as_bytes()).unwrap();
                     println!("Connection terminates.");
                 });
